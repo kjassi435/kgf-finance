@@ -14,13 +14,13 @@ export default async function AgentReceiptPage({
   const { id } = await params;
   const user = await getCurrentUser();
   const data = await getReceiptByCollection(id);
-  if (!data || data.receipt.agentId !== user?.id) notFound();
+  if (!data || data.receipt.agentId !== user?.id || !data.customer) notFound();
   const token = receiptShareToken(data.receipt.id);
   return (
     <div className="p-6">
       <div className="no-print mb-4 flex gap-3">
         <PrintButton />
-        <WhatsAppShareButton mobile={data.customer.mobile} token={token} />
+        <WhatsAppShareButton mobile={data.customer.mobile ?? ""} token={token} />
       </div>
       <ReceiptView data={data as any} />
     </div>

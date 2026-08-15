@@ -1,0 +1,158 @@
+import { db } from "../lib/db";
+import {
+  admins,
+  agents,
+  customers,
+  collections,
+  receipts,
+  agentCustomerAssignments,
+} from "../lib/schema";
+import { eq } from "drizzle-orm";
+import { hashPassword, encryptSensitive, maskAadhaar } from "../lib/crypto";
+import { genId, todayISODate } from "../lib/id";
+import { recomputeCustomerBalance } from "../lib/services/balance";
+
+async function main() {
+  const now = new Date().toISOString();
+
+  // Admin
+  const existingAdmin = await db.select({ id: admins.id }).from(admins).limit(1);
+  if (existingAdmin.length === 0) {
+    await db.insert(admins).values({
+      id: genId("ADM"),
+      username: "admin",
+      email: "admin@kgf.com",
+      name: "Super Admin",
+      passwordHash: await hashPassword("admin123"),
+      createdAt: now,
+      updatedAt: now,
+    });
+    console.log("✓ Admin created (username: admin / password: admin123)");
+  } else {
+    console.log("• Admin already exists");
+  }
+
+  // Agent
+  let agentId = "";
+  const existingAgent = await db.select().from(agents).limit(1);
+  if (existingAgent.length === 0) {
+    const [a] = await db
+      .insert(agents)
+      .values({
+        id: genId("AGT"),
+        agentId: "AG-001",
+        name: "Ravi Kumar",
+        mobile: "9876543210",
+        email: "ravi@kgf.com",
+        passwordHash: await hashPassword("agent123"),
+        status: "active",
+        createdAt: now,
+        updatedAt: now,
+      })
+      .returning();
+    agentId = a.id;
+    console.log("✓ Agent created (mobile: 9876543210 / password: agent123)");
+  } else {
+    agentId = existingAgent[0].id;
+    console.log("• Agent already exists");
+  }
+
+  // Customers
+  const existingCust = await db.select({ id: customers.id }).from(customers).limit(1);
+  if (existingCust.length === 0) {
+    const samples = [
+      { name: "Amit Sharma", mobile: "9000000001", daily: 500, village: "Bhopal" },
+      { name: "Sita Verma", mobile: "9000000002", daily: 300, village: "Indore" },
+      { name: "Rahul Singh", mobile: "9000000003", daily: 200, village: "Gwalior" },
+    ];
+    for (let i = 0; i < samples.length; i++) {
+      const s = samples[i];
+      const code = `CUST-${String(i + 1).padStart(4, "0")}`;
+      const aadhaar = `1234${String(56789012 + i).padStart(8, "0")}`;
+      const [c] = await db
+        .insert(customers)
+        .values({
+          id: genId("CUS"),
+          customerId: code,
+          name: s.name,
+          fatherHusbandName: "Father Name",
+          dob: "1990-01-01",
+          gender: "Male",
+          aadhaarEnc: encryptSensitive(aadhaar),
+          aadhaarMask: maskAadhaar(aadhaar),
+          mobile: s.mobile,
+          fullAddress: `${s.village} MP`,
+          village: s.village,
+          state: "Madhya Pradesh",
+          pin: "462001",
+          registrationDate: "2026-08-01",
+          assignedAgentId: agentId,
+          dailyCollectionAmount: s.daily,
+          collectionFrequency: "daily",
+          planType: "standard",
+          accountStatus: "active",
+          passwordHash: await hashPassword(s.mobile.slice(-4)),
+          loginEnabled: 1,
+          totalDeposited: 0,
+          totalPending: 0,
+          createdAt: now,
+          updatedAt: now,
+        })
+        .returning();
+
+      await db.insert(agentCustomerAssignments).values({
+        id: genId("ACA"),
+        agentId,
+        customerId: c.id,
+        active: 1,
+        assignedAt: now,
+      });
+
+      for (let d = 1; d <= 5; d++) {
+        const date = new Date(2026, 7, d).toISOString().slice(0, 10);
+        const [col] = await db
+          .insert(collections)
+          .values({
+            id: genId("COL"),
+            collectionId: `COL-${String(10000 + i * 10 + d)}`,
+            customerId: c.id,
+            agentId,
+            date,
+            time: "10:00",
+            amount: s.daily,
+            paymentMode: d % 2 === 0 ? "upi" : "cash",
+            collectedById: agentId,
+            createdAt: now,
+            updatedAt: now,
+          })
+          .returning();
+        await db
+          .update(customers)
+          .set({ totalDeposited: (Number(c.totalDeposited) || 0) + s.daily })
+          .where(eq(customers.id, c.id));
+        await db.insert(receipts).values({
+          id: genId("RCP"),
+          receiptNumber: `RCP-${String(20000 + i * 10 + d)}`,
+          collectionId: col.id,
+          customerId: c.id,
+          agentId,
+          amount: s.daily,
+          previousBalance: 0,
+          currentBalance: 0,
+          generatedAt: now,
+        });
+      }
+      await recomputeCustomerBalance(c.id);
+      console.log(`✓ Customer ${s.name} (${code}) + 5 collections`);
+    }
+  } else {
+    console.log("• Customers already exist");
+  }
+
+  console.log("\nSeed complete.");
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

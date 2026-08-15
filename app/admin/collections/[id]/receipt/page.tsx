@@ -12,13 +12,13 @@ export default async function AdminReceiptPage({
 }) {
   const { id } = await params;
   const data = await getReceiptByCollection(id);
-  if (!data) notFound();
+  if (!data || !data.customer) notFound();
   const token = receiptShareToken(data.receipt.id);
   return (
     <div className="p-6">
       <div className="no-print mb-4 flex gap-3">
         <PrintButton />
-        <WhatsAppShareButton mobile={data.customer.mobile} token={token} />
+        <WhatsAppShareButton mobile={data.customer.mobile ?? ""} token={token} />
       </div>
       <ReceiptView data={data as any} />
     </div>
