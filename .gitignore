@@ -50,3 +50,5 @@ server.err
 next-env.d.ts
 
 .vercel
+
+cookies.txt
