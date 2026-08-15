@@ -22,13 +22,8 @@ export default async function Home() {
     <div id="top" className="min-h-screen bg-white text-slate-800">
       <SiteHeader authed={!!s} role={s?.role} />
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-600 text-white">
-        <img
-          src="https://img.magnific.com/premium-photo/collection-indian-currency-notes-are-displayed-wall_702650-311.jpg?semt=ais_hybrid&w=740&q=80"
-          alt="Indian currency notes for collection"
-          className="absolute top-0 right-0 w-64 md:w-80 lg:w-96 object-contain opacity-15 pointer-events-none"
-        />
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.4),transparent_50%)]" />
+      <section className="relative bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-600 text-white">
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.4),transparent_50%)]" />
         <div className="relative max-w-6xl mx-auto px-4 py-24 md:py-32 text-center">
           <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">KGF Investers Daily Collection</h1>
           <p className="text-lg md:text-xl text-indigo-100 max-w-2xl mx-auto mb-8">
