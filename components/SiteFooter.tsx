@@ -5,7 +5,7 @@ export default function SiteFooter() {
     <footer className="bg-slate-900 text-slate-300">
       <div className="max-w-6xl mx-auto px-4 py-12 grid gap-8 md:grid-cols-3">
         <div>
-          <h3 className="text-white font-semibold text-lg mb-3">KGF Daily Collection</h3>
+          <h3 className="text-white font-semibold text-lg mb-3">KGF Investers</h3>
           <p className="text-sm text-slate-400">
             Reliable daily money collection and customer management for agents and
             administrators. Transparent, trackable, and secure.
@@ -30,7 +30,7 @@ export default function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
-        © {new Date().getFullYear()} KGF Daily Collection. All rights reserved.
+        © {new Date().getFullYear()} KGF Investers. All rights reserved.
       </div>
     </footer>
   );

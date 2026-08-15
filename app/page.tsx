@@ -30,9 +30,9 @@ export default async function Home() {
         />
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.4),transparent_50%)]" />
         <div className="relative max-w-6xl mx-auto px-4 py-24 md:py-32 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">Daily Collection, Made Simple & Transparent</h1>
+          <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">KGF Investers Daily Collection</h1>
           <p className="text-lg md:text-xl text-indigo-100 max-w-2xl mx-auto mb-8">
-            KGF Daily Collection helps agents and admins manage customer deposits, generate instant receipts, and keep every rupee accountable.
+            KGF Investers helps agents and admins manage customer deposits, generate instant receipts, and keep every rupee accountable.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <a href="/login" className="bg-white text-indigo-700 hover:bg-indigo-50 px-6 py-3 rounded-xl font-semibold shadow-lg">Get Started</a>
@@ -44,7 +44,7 @@ export default async function Home() {
       <section id="about" className="max-w-6xl mx-auto px-4 py-20">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-slate-900">About Us</h2>
-          <p className="text-slate-500 mt-3 max-w-2xl mx-auto">We built KGF Daily Collection to bring trust and clarity to daily deposit schemes. Every collection is recorded, every receipt is shared, and every balance is verifiable.</p>
+          <p className="text-slate-500 mt-3 max-w-2xl mx-auto">We built KGF Investers to bring trust and clarity to daily deposit schemes. Every collection is recorded, every receipt is shared, and every balance is verifiable.</p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {[{ t: "Transparent", d: "Customers always know exactly what they have paid and what remains." }, { t: "Accountable", d: "Full audit logs and agent assignments keep operations honest." }, { t: "Effortless", d: "Agents collect and share receipts in seconds, on the field." }].map((c) => (
