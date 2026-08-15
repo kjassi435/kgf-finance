@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     result = await authenticate(parsed.data.identifier, parsed.data.password);
   } catch (e: any) {
     return error(
-      `DBG dbUrl=${!!process.env.DATABASE_URL} token=${!!process.env.TURSO_AUTH_TOKEN} err=${e?.message || e}`,
+      `DBG dbUrl=${!!process.env.DATABASE_URL} tokenLen=${process.env.TURSO_AUTH_TOKEN?.length} cause=${e?.cause?.message || e?.cause || "none"} err=${e?.message || e}`,
       500
     );
   }
