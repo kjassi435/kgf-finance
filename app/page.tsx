@@ -1,69 +1,166 @@
-import Image from "next/image";
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
+import { getSession } from "@/lib/session";
 
-export default function Home() {
+const STEPS = [
+  {
+    n: 1,
+    title: "Register & Assign",
+    desc: "Admin onboards customers and assigns a dedicated field agent.",
+  },
+  {
+    n: 2,
+    title: "Daily Collection",
+    desc: "Agents collect payments on the field and record them instantly.",
+  },
+  {
+    n: 3,
+    title: "Receipt & Notify",
+    desc: "A receipt is generated and shared with the customer via WhatsApp.",
+  },
+  {
+    n: 4,
+    title: "Track & Audit",
+    desc: "Admins monitor collections, balances, and full audit trails.",
+  },
+];
+
+const TESTIMONIALS = [
+  {
+    name: "Amit Sharma",
+    role: "Customer",
+    stars: 5,
+    text: "Very transparent. I get my receipt on WhatsApp the same day. No confusion about my balance.",
+  },
+  {
+    name: "Sita Verma",
+    role: "Customer",
+    stars: 5,
+    text: "The agent comes regularly and the app shows exactly how much I have paid. Highly recommend.",
+  },
+  {
+    name: "Rahul Singh",
+    role: "Customer",
+    stars: 4,
+    text: "Easy to track my daily deposits. The dashboard is clean and simple to understand.",
+  },
+  {
+    name: "Priya Nair",
+    role: "Agent",
+    stars: 5,
+    text: "Collecting and recording payments is quick. The receipt sharing saves me so much time.",
+  },
+];
+
+export default async function Home() {
+  const s = await getSession();
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <div id="top" className="min-h-screen bg-white text-slate-800">
+      <SiteHeader authed={!!s} role={s?.role} />
+
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-600 text-white">
+        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.4),transparent_50%)]" />
+        <div className="relative max-w-6xl mx-auto px-4 py-24 md:py-32 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">
+            Daily Collection, Made Simple & Transparent
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
+          <p className="text-lg md:text-xl text-indigo-100 max-w-2xl mx-auto mb-8">
+            KGF Daily Collection helps agents and admins manage customer
+            deposits, generate instant receipts, and keep every rupee
+            accountable.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
             <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              href="/login"
+              className="bg-white text-indigo-700 hover:bg-indigo-50 px-6 py-3 rounded-xl font-semibold shadow-lg"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
+              Get Started
+            </a>
             <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              href="#how"
+              className="border border-white/60 text-white hover:bg-white/10 px-6 py-3 rounded-xl font-semibold"
             >
-              Learning
-            </a>{" "}
-            center.
+              How It Works
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* About */}
+      <section id="about" className="max-w-6xl mx-auto px-4 py-20">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-slate-900">About Us</h2>
+          <p className="text-slate-500 mt-3 max-w-2xl mx-auto">
+            We built KGF Daily Collection to bring trust and clarity to daily
+            deposit schemes. Every collection is recorded, every receipt is
+            shared, and every balance is verifiable.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="grid gap-6 md:grid-cols-3">
+          {[
+            { t: "Transparent", d: "Customers always know exactly what they have paid and what remains." },
+            { t: "Accountable", d: "Full audit logs and agent assignments keep operations honest." },
+            { t: "Effortless", d: "Agents collect and share receipts in seconds, on the field." },
+          ].map((c) => (
+            <div key={c.t} className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+              <h3 className="font-semibold text-indigo-700 mb-2">{c.t}</h3>
+              <p className="text-sm text-slate-600">{c.d}</p>
+            </div>
+          ))}
         </div>
-      </main>
+      </section>
+
+      {/* How we work */}
+      <section id="how" className="bg-slate-50 py-20">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-slate-900">How We Work</h2>
+            <p className="text-slate-500 mt-3">A simple, four-step flow.</p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-4">
+            {STEPS.map((s) => (
+              <div key={s.n} className="relative bg-white border border-slate-200 rounded-2xl p-6">
+                <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold mb-4">
+                  {s.n}
+                </div>
+                <h3 className="font-semibold text-slate-900 mb-2">{s.title}</h3>
+                <p className="text-sm text-slate-600">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section id="testimonials" className="max-w-6xl mx-auto px-4 py-20">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-slate-900">What People Say</h2>
+          <p className="text-slate-500 mt-3">Rated by our customers and agents.</p>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2">
+          {TESTIMONIALS.map((t) => (
+            <div key={t.name} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <div className="flex items-center gap-1 mb-3 text-amber-400">
+                {"★".repeat(t.stars)}
+                <span className="text-slate-300">{"★".repeat(5 - t.stars)}</span>
+              </div>
+              <p className="text-slate-700 text-sm mb-4">{t.text}</p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-semibold">
+                  {t.name.charAt(0)}
+                </div>
+                <div>
+                  <div className="font-medium text-slate-900 text-sm">{t.name}</div>
+                  <div className="text-xs text-slate-500">{t.role}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <SiteFooter />
     </div>
   );
 }

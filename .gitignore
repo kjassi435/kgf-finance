@@ -32,6 +32,15 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# uploaded customer documents (keep dir)
+/public/uploads/*
+!.gitkeep
+
+# local logs
+server.log
+server.err
 
 # vercel
 .vercel
