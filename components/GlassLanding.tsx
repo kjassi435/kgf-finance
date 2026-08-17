@@ -36,7 +36,7 @@ const TESTIMONIALS = [
   {
     name: "Amit Sharma",
     role: "Customer · Jaipur",
-    text: "I used to lose track of my daily deposits. Now I get a WhatsApp receipt the same day. KGF Investers changed everything for me.",
+    text: "I used to lose track of my daily deposits. Now I get a WhatsApp receipt the same day. Kalyan Gold Fund changed everything for me.",
     initials: "AS",
     color: "bg-indigo-100 text-indigo-700",
   },
@@ -99,7 +99,7 @@ function GlassCube() {
       >
         <div className="text-center">
           <div className="text-5xl md:text-7xl font-black text-indigo-600/80 tracking-tighter">K</div>
-          <div className="text-[10px] md:text-xs font-semibold text-indigo-400/70 tracking-widest uppercase mt-1">investers</div>
+          <div className="text-[10px] md:text-xs font-semibold text-indigo-400/70 tracking-widest uppercase mt-1">gold fund</div>
         </div>
       </div>
       {/* Floating orbs */}
@@ -185,7 +185,7 @@ export default function GlassLanding() {
           </h1>
 
           <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-            KGF Investers helps agents collect daily deposits, share instant receipts, and gives customers full transparency over every rupee.
+            Kalyan Gold Fund helps agents collect daily deposits, share instant receipts, and gives customers full transparency over every rupee.
           </p>
 
           <div className="flex flex-wrap justify-center gap-4">
@@ -213,10 +213,10 @@ export default function GlassLanding() {
               Trusted by thousands since 2020
             </h2>
             <p className="text-slate-500 leading-relaxed mb-4">
-              We started with a simple question: <strong className="text-slate-700">why should daily collection be complicated?</strong> Today, over 2,400 customers and 85 agents trust KGF Investers to manage ₹8.47 crore in collected deposits — with 99.7% accuracy.
+              We started with a simple question: <strong className="text-slate-700">why should daily collection be complicated?</strong> Today, over 2,400 customers and 85 agents trust Kalyan Gold Fund to manage ₹8.47 crore in collected deposits — with 99.7% accuracy.
             </p>
             <p className="text-slate-500 leading-relaxed mb-6">
-              Every rupee is tracked. Every receipt is shared. Every balance is verifiable. That is the KGF promise.
+              Every rupee is tracked. Every receipt is shared. Every balance is verifiable. That is the Kalyan Gold Fund promise.
             </p>
             <div className="flex gap-8">
               <div>
@@ -299,8 +299,8 @@ export default function GlassLanding() {
                   <div className="text-xs text-slate-400">{t.role}</div>
                 </div>
                 {/* G logo */}
-                <div className="ml-auto">
-                  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
+                <div className="ml-auto" aria-label="Google verified review">
+                  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" role="img">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
@@ -310,7 +310,7 @@ export default function GlassLanding() {
               </div>
 
               {/* Stars */}
-              <div className="flex gap-0.5 mb-3">
+              <div className="flex gap-0.5 mb-3" aria-hidden="true">
                 {[1, 2, 3, 4, 5].map((s) => (
                   <svg key={s} className={`w-4 h-4 ${s <= 5 ? "text-amber-400" : "text-slate-200"}`} fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />

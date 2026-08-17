@@ -93,7 +93,7 @@ export default function Sidebar({
         }`}
       >
         <div className="h-16 flex items-center justify-between px-5 border-b border-slate-800">
-          <span className="font-bold text-lg tracking-tight">KGF Collection</span>
+          <span className="font-bold text-lg tracking-tight">Kalyan Gold Fund</span>
           <button
             onClick={() => setOpen(false)}
             className="md:hidden text-slate-300"

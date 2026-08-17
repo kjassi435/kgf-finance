@@ -54,7 +54,7 @@ export default async function ReportsPage({
       </div>
 
       <div className="print-area">
-        <div className="text-xl font-bold mb-4">KGF Collection — Reports</div>
+        <div className="text-xl font-bold mb-4">Kalyan Gold Fund — Reports</div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <Card>
             <div className="text-xs uppercase text-slate-500">Total Collected</div>

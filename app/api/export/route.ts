@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
 
   if (format === "pdf") {
     let doc = new PDFDocument({ margin: 30, size: "A4" });
-    doc.fontSize(16).text("KGF Daily Collection Report", { align: "center" });
+    doc.fontSize(16).text("Kalyan Gold Fund Collection Report", { align: "center" });
     doc.fontSize(10).text(`Type: ${type}   Range: ${from || "all"} to ${to || "all"}`, { align: "center" });
     doc.moveDown();
 

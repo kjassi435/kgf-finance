@@ -1,5 +1,15 @@
 import { SmokeyBackground } from "@/components/SmokeyBackground";
 import { LoginForm } from "@/components/LoginForm";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Login - Kalyan Gold Fund",
+  description: "Login to Kalyan Gold Fund (KGF) dashboard. Access your daily money collection, customer management, and field agent tools.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function LoginPage() {
   return (

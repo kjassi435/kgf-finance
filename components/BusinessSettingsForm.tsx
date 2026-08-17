@@ -12,7 +12,7 @@ export default function BusinessSettingsForm({
   currency: string;
 }) {
   const router = useRouter();
-  const [name, setName] = useState(appName || "KGF Collection");
+  const [name, setName] = useState(appName || "Kalyan Gold Fund");
   const [cur, setCur] = useState(currency || "₹");
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);

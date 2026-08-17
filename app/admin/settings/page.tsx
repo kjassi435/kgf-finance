@@ -9,7 +9,7 @@ export default async function SettingsPage() {
   const aadhaarSet = !!process.env.AADHAAR_ENCRYPTION_KEY;
   const jwtSet = !!process.env.JWT_SECRET;
 
-  let appName = process.env.APP_NAME || "KGF Collection";
+  let appName = process.env.APP_NAME || "Kalyan Gold Fund";
   let currency = process.env.CURRENCY || "₹";
   try {
     const rows = await db.select().from(settings);

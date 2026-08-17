@@ -14,7 +14,7 @@ export default async function ReceiptView({
   };
 }) {
   const { receipt, customer, agent, collection } = data;
-  let companyName = process.env.APP_NAME || "KGF Investers";
+  let companyName = process.env.APP_NAME || "Kalyan Gold Fund";
   try {
     const row = await db
       .select()
