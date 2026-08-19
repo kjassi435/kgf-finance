@@ -88,78 +88,79 @@ export async function createCollection(
   const previousBalance = Number(customer.totalPending) || 0;
   const now = new Date().toISOString();
 
-  const { inserted, receipt } = await db.transaction(async (tx) => {
-    const [inserted] = await tx
-      .insert(collections)
-      .values({
-        id: genId("COL"),
-        collectionId: await nextCode("COL", collections.collectionId, collections, 5, tx),
-        customerId: data.customerId,
-        agentId: agentId!,
-        date: data.date,
-        time: data.time || nowTime(),
-        amount: data.amount,
-        paymentMode: data.paymentMode,
-        transactionRef: data.transactionRef || null,
-        remarks: data.remarks || null,
-        collectedById: actor.id,
-        createdAt: now,
-        updatedAt: now,
-      })
-      .returning();
-
-    // Update customer deposited + balances
-    await tx
-      .update(customers)
-      .set({
-        totalDeposited: (Number(customer.totalDeposited) || 0) + Number(data.amount),
-        updatedAt: now,
-      })
-      .where(eq(customers.id, customer.id));
-    await recomputeCustomerBalance(customer.id, tx);
-
-    await tx.insert(paymentTransactions).values({
-      id: genId("PTX"),
-      transactionId: await nextCode("PTX", paymentTransactions.transactionId, paymentTransactions, 4, tx),
-      collectionId: inserted.id,
-      customerId: customer.id,
-      agentId,
-      date: data.date,
-      amount: data.amount,
-      paymentMode: data.paymentMode,
-      transactionRef: data.transactionRef || null,
-      type: "collection",
-      status: "success",
-      createdAt: now,
-    });
-
-    const [refreshed] = await tx
-      .select()
-      .from(customers)
-      .where(eq(customers.id, customer.id))
-      .limit(1);
-    const currentBalance = Number(refreshed?.totalPending) || 0;
-
-    // Retry receipt insert on unique constraint (race condition on receipt number)
-    let receipt: any;
+  // Retry entire transaction on unique constraint (race condition on receipt number)
+  const { inserted, receipt } = await (async () => {
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
-        const [r] = await tx
-          .insert(receipts)
-          .values({
-            id: genId("RCP"),
-            receiptNumber: await nextCode("RCP", receipts.receiptNumber, receipts, 6, tx),
+        return await db.transaction(async (tx) => {
+          const [inserted] = await tx
+            .insert(collections)
+            .values({
+              id: genId("COL"),
+              collectionId: await nextCode("COL", collections.collectionId, collections, 5, tx),
+              customerId: data.customerId,
+              agentId: agentId!,
+              date: data.date,
+              time: data.time || nowTime(),
+              amount: data.amount,
+              paymentMode: data.paymentMode,
+              transactionRef: data.transactionRef || null,
+              remarks: data.remarks || null,
+              collectedById: actor.id,
+              createdAt: now,
+              updatedAt: now,
+            })
+            .returning();
+
+          // Update customer deposited + balances
+          await tx
+            .update(customers)
+            .set({
+              totalDeposited: (Number(customer.totalDeposited) || 0) + Number(data.amount),
+              updatedAt: now,
+            })
+            .where(eq(customers.id, customer.id));
+          await recomputeCustomerBalance(customer.id, tx);
+
+          await tx.insert(paymentTransactions).values({
+            id: genId("PTX"),
+            transactionId: await nextCode("PTX", paymentTransactions.transactionId, paymentTransactions, 4, tx),
             collectionId: inserted.id,
             customerId: customer.id,
-            agentId: agentId!,
+            agentId,
+            date: data.date,
             amount: data.amount,
-            previousBalance,
-            currentBalance,
-            generatedAt: now,
-          })
-          .returning();
-        receipt = r;
-        break;
+            paymentMode: data.paymentMode,
+            transactionRef: data.transactionRef || null,
+            type: "collection",
+            status: "success",
+            createdAt: now,
+          });
+
+          const [refreshed] = await tx
+            .select()
+            .from(customers)
+            .where(eq(customers.id, customer.id))
+            .limit(1);
+          const currentBalance = Number(refreshed?.totalPending) || 0;
+
+          const [receipt] = await tx
+            .insert(receipts)
+            .values({
+              id: genId("RCP"),
+              receiptNumber: await nextCode("RCP", receipts.receiptNumber, receipts, 6, tx),
+              collectionId: inserted.id,
+              customerId: customer.id,
+              agentId: agentId!,
+              amount: data.amount,
+              previousBalance,
+              currentBalance,
+              generatedAt: now,
+            })
+            .returning();
+
+          return { inserted, receipt };
+        });
       } catch (e: any) {
         const errStr = String(e?.message || e?.cause?.message || e?.toString?.() || JSON.stringify(e) || e || "").toLowerCase();
         const isUnique = errStr.includes("unique constraint") ||
@@ -176,9 +177,8 @@ export async function createCollection(
         await new Promise((r) => setTimeout(r, 50 * (attempt + 1)));
       }
     }
-
-    return { inserted, receipt };
-  });
+    throw new Error("Max retries exceeded for collection creation");
+  })();
 
   await writeAudit({
     actorType: actor.type,
