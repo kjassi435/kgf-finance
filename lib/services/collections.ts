@@ -12,16 +12,16 @@ async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
   try {
     return await fn();
   } catch (e: any) {
-    const msg = String(e?.message || e?.cause?.message || e || "").toLowerCase();
-    const isUnique = msg.includes("unique constraint") ||
-      msg.includes("duplicate") ||
-      msg.includes("constraint failed") ||
-      msg.includes("unique") ||
-      msg.includes("constraint") ||
-      msg.includes("failed query") ||
-      msg.includes("19") ||
-      msg.includes("sql") ||
-      msg.includes("insert") && msg.includes("receipt") ||
+    const errStr = String(e?.message || e?.cause?.message || e?.toString?.() || JSON.stringify(e) || e || "").toLowerCase();
+    const isUnique = errStr.includes("unique constraint") ||
+      errStr.includes("duplicate") ||
+      errStr.includes("constraint failed") ||
+      errStr.includes("unique") ||
+      errStr.includes("constraint") ||
+      errStr.includes("failed query") ||
+      errStr.includes("19") ||
+      errStr.includes("sql") ||
+      (errStr.includes("insert") && errStr.includes("receipt")) ||
       false;
     if (retries > 0 && isUnique) {
       await new Promise((r) => setTimeout(r, 50 * (4 - retries)));
