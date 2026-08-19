@@ -8,6 +8,23 @@ import { collectionCreateSchema } from "../validators";
 import { NOTIFICATION_TYPES } from "../constants";
 import { nextCode } from "./ids";
 
+const isUniqueConstraintError = (e: any) => {
+  const msg = e?.message?.toLowerCase() || "";
+  return msg.includes("unique constraint") || msg.includes("duplicate") || msg.includes("constraint failed");
+};
+
+async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
+  try {
+    return await fn();
+  } catch (e) {
+    if (retries > 0 && isUniqueConstraintError(e)) {
+      await new Promise((r) => setTimeout(r, 50 * (4 - retries)));
+      return withRetry(fn, retries - 1);
+    }
+    throw e;
+  }
+}
+
 export async function listCollections(opts: {
   from?: string;
   to?: string;
@@ -88,7 +105,8 @@ export async function createCollection(
   const previousBalance = Number(customer.totalPending) || 0;
   const now = new Date().toISOString();
 
-  const { inserted, receipt } = await db.transaction(async (tx) => {
+  const { inserted, receipt } = await withRetry(async () => {
+    return await db.transaction(async (tx) => {
     const [inserted] = await tx
       .insert(collections)
       .values({
@@ -156,6 +174,7 @@ export async function createCollection(
       .returning();
 
     return { inserted, receipt };
+  });
   });
 
   await writeAudit({
