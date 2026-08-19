@@ -140,20 +140,42 @@ export async function createCollection(
       .limit(1);
     const currentBalance = Number(refreshed?.totalPending) || 0;
 
-    const [receipt] = await tx
-      .insert(receipts)
-      .values({
-        id: genId("RCP"),
-        receiptNumber: await nextCode("RCP", receipts.receiptNumber, receipts, 6, tx),
-        collectionId: inserted.id,
-        customerId: customer.id,
-        agentId: agentId!,
-        amount: data.amount,
-        previousBalance,
-        currentBalance,
-        generatedAt: now,
-      })
-      .returning();
+    // Retry receipt insert on unique constraint (race condition on receipt number)
+    let receipt: any;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const [r] = await tx
+          .insert(receipts)
+          .values({
+            id: genId("RCP"),
+            receiptNumber: await nextCode("RCP", receipts.receiptNumber, receipts, 6, tx),
+            collectionId: inserted.id,
+            customerId: customer.id,
+            agentId: agentId!,
+            amount: data.amount,
+            previousBalance,
+            currentBalance,
+            generatedAt: now,
+          })
+          .returning();
+        receipt = r;
+        break;
+      } catch (e: any) {
+        const errStr = String(e?.message || e?.cause?.message || e?.toString?.() || JSON.stringify(e) || e || "").toLowerCase();
+        const isUnique = errStr.includes("unique constraint") ||
+          errStr.includes("duplicate") ||
+          errStr.includes("constraint failed") ||
+          errStr.includes("unique") ||
+          errStr.includes("constraint") ||
+          errStr.includes("failed query") ||
+          errStr.includes("19") ||
+          errStr.includes("sql") ||
+          (errStr.includes("insert") && errStr.includes("receipt")) ||
+          false;
+        if (!isUnique || attempt === 2) throw e;
+        await new Promise((r) => setTimeout(r, 50 * (attempt + 1)));
+      }
+    }
 
     return { inserted, receipt };
   });
