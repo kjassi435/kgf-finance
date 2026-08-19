@@ -2,6 +2,7 @@ import { db } from "../db";
 import { collections, customers, receipts, agents, paymentTransactions } from "../schema";
 import { eq, and, like, or, desc, sql, gte, lte } from "drizzle-orm";
 import { genId, nowTime } from "../id";
+import { generateReceiptNumber } from "./ids";
 import { writeAudit } from "../audit";
 import { recomputeCustomerBalance } from "./balance";
 import { collectionCreateSchema } from "../validators";
@@ -88,11 +89,7 @@ export async function createCollection(
   const previousBalance = Number(customer.totalPending) || 0;
   const now = new Date().toISOString();
 
-  // Retry entire transaction on unique constraint (race condition on receipt number)
-  const { inserted, receipt } = await (async () => {
-    for (let attempt = 0; attempt < 3; attempt++) {
-      try {
-        return await db.transaction(async (tx) => {
+  const { inserted, receipt } = await db.transaction(async (tx) => {
           const [inserted] = await tx
             .insert(collections)
             .values({
@@ -148,7 +145,7 @@ export async function createCollection(
             .insert(receipts)
             .values({
               id: genId("RCP"),
-              receiptNumber: await nextCode("RCP", receipts.receiptNumber, receipts, 6, tx),
+              receiptNumber: generateReceiptNumber("RCP"),
               collectionId: inserted.id,
               customerId: customer.id,
               agentId: agentId!,
@@ -160,25 +157,7 @@ export async function createCollection(
             .returning();
 
           return { inserted, receipt };
-        });
-      } catch (e: any) {
-        const errStr = String(e?.message || e?.cause?.message || e?.toString?.() || JSON.stringify(e) || e || "").toLowerCase();
-        const isUnique = errStr.includes("unique constraint") ||
-          errStr.includes("duplicate") ||
-          errStr.includes("constraint failed") ||
-          errStr.includes("unique") ||
-          errStr.includes("constraint") ||
-          errStr.includes("failed query") ||
-          errStr.includes("19") ||
-          errStr.includes("sql") ||
-          (errStr.includes("insert") && errStr.includes("receipt")) ||
-          false;
-        if (!isUnique || attempt === 2) throw e;
-        await new Promise((r) => setTimeout(r, 50 * (attempt + 1)));
-      }
-    }
-    throw new Error("Max retries exceeded for collection creation");
-  })();
+      });
 
   await writeAudit({
     actorType: actor.type,
