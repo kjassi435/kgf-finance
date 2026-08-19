@@ -9,14 +9,14 @@ import { NOTIFICATION_TYPES } from "../constants";
 import { nextCode } from "./ids";
 
 const isUniqueConstraintError = (e: any) => {
-  const msg = e?.message?.toLowerCase() || "";
+  const msg = String(e?.message || e?.cause?.message || e || "").toLowerCase();
   return msg.includes("unique constraint") ||
     msg.includes("duplicate") ||
     msg.includes("constraint failed") ||
     msg.includes("unique") ||
-    msg.includes("sql") && msg.includes("constraint") ||
-    msg.includes("19") || // SQLite error code for constraint violation
-    e?.cause?.message?.toLowerCase().includes("unique") ||
+    msg.includes("constraint") ||
+    msg.includes("failed query") ||
+    msg.includes("19") ||
     false;
 };
 
