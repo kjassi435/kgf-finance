@@ -6,6 +6,7 @@ import { Input, Select, Button } from "@/components/ui";
 
 export default function CollectionForm({
   customers,
+  onSuccess,
 }: {
   customers: {
     id: string;
@@ -13,6 +14,7 @@ export default function CollectionForm({
     customerId: string;
     dailyAmount: number;
   }[];
+  onSuccess?: () => void;
 }) {
   const router = useRouter();
   const [customerId, setCustomerId] = useState(customers[0]?.id || "");
@@ -53,8 +55,12 @@ export default function CollectionForm({
       setError(data.error || "Failed");
       return;
     }
-    router.push("/agent/history");
-    router.refresh();
+    if (onSuccess) {
+      onSuccess();
+    } else {
+      router.push("/agent/history");
+      router.refresh();
+    }
   }
 
   return (
