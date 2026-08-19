@@ -8,23 +8,22 @@ import { collectionCreateSchema } from "../validators";
 import { NOTIFICATION_TYPES } from "../constants";
 import { nextCode } from "./ids";
 
-const isUniqueConstraintError = (e: any) => {
-  const msg = String(e?.message || e?.cause?.message || e || "").toLowerCase();
-  return msg.includes("unique constraint") ||
-    msg.includes("duplicate") ||
-    msg.includes("constraint failed") ||
-    msg.includes("unique") ||
-    msg.includes("constraint") ||
-    msg.includes("failed query") ||
-    msg.includes("19") ||
-    false;
-};
-
 async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
   try {
     return await fn();
   } catch (e) {
-    if (retries > 0 && isUniqueConstraintError(e)) {
+    const msg = String(e?.message || e?.cause?.message || e || "").toLowerCase();
+    const isUnique = msg.includes("unique constraint") ||
+      msg.includes("duplicate") ||
+      msg.includes("constraint failed") ||
+      msg.includes("unique") ||
+      msg.includes("constraint") ||
+      msg.includes("failed query") ||
+      msg.includes("19") ||
+      msg.includes("sql") ||
+      msg.includes("insert") && msg.includes("receipt") ||
+      false;
+    if (retries > 0 && isUnique) {
       await new Promise((r) => setTimeout(r, 50 * (4 - retries)));
       return withRetry(fn, retries - 1);
     }
