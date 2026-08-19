@@ -10,7 +10,14 @@ import { nextCode } from "./ids";
 
 const isUniqueConstraintError = (e: any) => {
   const msg = e?.message?.toLowerCase() || "";
-  return msg.includes("unique constraint") || msg.includes("duplicate") || msg.includes("constraint failed");
+  return msg.includes("unique constraint") ||
+    msg.includes("duplicate") ||
+    msg.includes("constraint failed") ||
+    msg.includes("unique") ||
+    msg.includes("sql") && msg.includes("constraint") ||
+    msg.includes("19") || // SQLite error code for constraint violation
+    e?.cause?.message?.toLowerCase().includes("unique") ||
+    false;
 };
 
 async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
