@@ -8,29 +8,6 @@ import { collectionCreateSchema } from "../validators";
 import { NOTIFICATION_TYPES } from "../constants";
 import { nextCode } from "./ids";
 
-async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
-  try {
-    return await fn();
-  } catch (e: any) {
-    const errStr = String(e?.message || e?.cause?.message || e?.toString?.() || JSON.stringify(e) || e || "").toLowerCase();
-    const isUnique = errStr.includes("unique constraint") ||
-      errStr.includes("duplicate") ||
-      errStr.includes("constraint failed") ||
-      errStr.includes("unique") ||
-      errStr.includes("constraint") ||
-      errStr.includes("failed query") ||
-      errStr.includes("19") ||
-      errStr.includes("sql") ||
-      (errStr.includes("insert") && errStr.includes("receipt")) ||
-      false;
-    if (retries > 0 && isUnique) {
-      await new Promise((r) => setTimeout(r, 50 * (4 - retries)));
-      return withRetry(fn, retries - 1);
-    }
-    throw e;
-  }
-}
-
 export async function listCollections(opts: {
   from?: string;
   to?: string;
@@ -111,8 +88,7 @@ export async function createCollection(
   const previousBalance = Number(customer.totalPending) || 0;
   const now = new Date().toISOString();
 
-  const { inserted, receipt } = await withRetry(async () => {
-    return await db.transaction(async (tx) => {
+  const { inserted, receipt } = await db.transaction(async (tx) => {
     const [inserted] = await tx
       .insert(collections)
       .values({
@@ -180,7 +156,6 @@ export async function createCollection(
       .returning();
 
     return { inserted, receipt };
-  });
   });
 
   await writeAudit({
