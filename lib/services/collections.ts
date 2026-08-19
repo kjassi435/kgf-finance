@@ -11,7 +11,7 @@ import { nextCode } from "./ids";
 async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
   try {
     return await fn();
-  } catch (e) {
+  } catch (e: any) {
     const msg = String(e?.message || e?.cause?.message || e || "").toLowerCase();
     const isUnique = msg.includes("unique constraint") ||
       msg.includes("duplicate") ||
